@@ -2,12 +2,13 @@ import requests
 import pandas as pd
 from rdflib import Graph, URIRef, Literal
 from rdflib.namespace import SKOS, RDF, DCTERMS, RDFS, VANN
+from io import StringIO
 
 def csv2Df(link, filename):
 
-    with open(filename, "w", encoding="utf-8") as f:
-        f.write(requests.get(link).text.encode("ISO-8859-1").decode())
-    df = pd.read_csv(filename, encoding="utf-8")
+    response = requests.get(link).text
+    df = pd.read_csv(StringIO(response), sep="\t")
+    df.to_csv(filename, index=False)
     
     return df
 
@@ -86,8 +87,8 @@ def main():
     graph = df2Skos(schemeDf, conceptsDf)
     graph.serialize(destination='scheme.ttl', format='turtle')   
 
-conceptsLink = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSJV7qC1QYCAYghp8SX09EatvnXPurJ9ZMAsGE1iUrPIxL4nLiyXlYBtKBi1Zf1xTG10AXzUp3pZcxx/pub?gid=0&single=true&output=csv"
-schemeLink = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSJV7qC1QYCAYghp8SX09EatvnXPurJ9ZMAsGE1iUrPIxL4nLiyXlYBtKBi1Zf1xTG10AXzUp3pZcxx/pub?gid=157607640&single=true&output=csv"
+conceptsLink = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSJV7qC1QYCAYghp8SX09EatvnXPurJ9ZMAsGE1iUrPIxL4nLiyXlYBtKBi1Zf1xTG10AXzUp3pZcxx/pub?gid=0&single=true&output=tsv"
+schemeLink = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSJV7qC1QYCAYghp8SX09EatvnXPurJ9ZMAsGE1iUrPIxL4nLiyXlYBtKBi1Zf1xTG10AXzUp3pZcxx/pub?gid=157607640&single=true&output=tsv"
 baseLanguageLabel = "de"
 
 propertyDict = {
